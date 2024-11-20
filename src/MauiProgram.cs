@@ -28,6 +28,8 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-SemiBold.ttf", "OpenSansSemiBold");
+                fonts.AddFont("SegoeUI-Semibold.ttf", "SegoeSemibold");
+				fonts.AddFont("FluentSystemIcons-Regular.ttf", FluentUI.FontFamily);
             });
 
 #if DEBUG

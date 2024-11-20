@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Balance.Pages.Controls;
 using MauiReactor;
-
-using Balance.Pages;
 using System.Diagnostics;
 
 namespace Balance;
 
-class AppShell : Component
+class AppShellState
+{
+    public string[] ThemeIcons { get; set; }
+}
+
+class AppShell : Component<AppShellState>
 {
     public AppShell()
     {
@@ -20,18 +19,51 @@ class AppShell : Component
             throw (Exception)args.ExceptionObject;
         };
     }
+
+    protected override void OnMounted()
+    {
+        base.OnMounted();
+
+        var themeIcons = new[]
+        {
+            "IconLight",
+            "IconDark"
+        };
+
+        State.ThemeIcons = themeIcons;
+    }
     public override VisualNode Render()
         => Shell(
-            FlyoutItem("MainPage",
+            FlyoutItem("Dashboard",
                 ShellContent()
-                    .Title("MainPage")
-                    .RenderContent(()=>new MainPage())
+                    .Title("Dashboard")
+                    // .FlyoutIcon(new FontImageSource{ FontFamily = FluentUI.FontFamily, Glyph = FluentUI.diagram_24_regular, Color = Colors.Black, Size=24 })   
+                    // .Icon((FontImageSource)Application.Current.Resources["IconDashboard"])
+                    .RenderContent(() => new MainPage())
+                    .Route("main")
             ),
-            FlyoutItem("OtherPage",
+            FlyoutItem("Projects",
                 ShellContent()
-                    .Title("OtherPage")
-                    .RenderContent(()=>new OtherPage())
+                    .Title("Projects")
+                    // .Icon((FontImageSource)Application.Current.Resources["IconProjects"])
+                    .RenderContent(() => new ProjectListPage())
+                    .Route("projects")
+            ),
+            FlyoutItem("Manage Meta",
+                ShellContent()
+                    .Title("Manage Meta")
+                    // .Icon((FontImageSource)Application.Current.Resources["IconMeta"])
+                    .RenderContent(() => new ManageMetaPage())
+                    .Route("manage")
             )
         );
+        // .FlyoutFooter(
+        //     Grid(              
+        //         new SegmentedControl()
+        //             .SegmentWidth(40).SegmentHeight(40)
+        //             .ItemSource(State.ThemeIcons.Select(icon => new SfSegmentItem { ImageSource = icon }).ToList())
+        //     )
+        //     .Padding(15)
+        // );
 }
 
