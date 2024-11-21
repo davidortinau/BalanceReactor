@@ -428,18 +428,18 @@ class ApplicationTheme : Theme
 
         PageStyles.Default = _ => _
             .Padding(0)
-            .BackgroundColor(IsLightTheme ? White : OffBlack);
+            .BackgroundColor(IsLightTheme ? LightBackground : DarkBackground);
 
         ShellStyles.Default = _ => _
-            .Set(MauiControls.Shell.BackgroundColorProperty, IsLightTheme ? White : OffBlack)
+            .Set(MauiControls.Shell.BackgroundColorProperty, IsLightTheme ? LightBackground : DarkBackground)
             .Set(MauiControls.Shell.ForegroundColorProperty, IsLightTheme ? Black : SecondaryDarkText)
             .Set(MauiControls.Shell.TitleColorProperty, IsLightTheme ? Black : SecondaryDarkText)
             .Set(MauiControls.Shell.DisabledColorProperty, IsLightTheme ? Gray200 : Gray950)
             .Set(MauiControls.Shell.UnselectedColorProperty, IsLightTheme ? Gray200 : Gray200)
             .Set(MauiControls.Shell.NavBarHasShadowProperty, false)
-            .Set(MauiControls.Shell.TabBarBackgroundColorProperty, IsLightTheme ? White : Black)
-            .Set(MauiControls.Shell.TabBarForegroundColorProperty, IsLightTheme ? Magenta : White)
-            .Set(MauiControls.Shell.TabBarTitleColorProperty, IsLightTheme ? Magenta : White)
+            .Set(MauiControls.Shell.TabBarBackgroundColorProperty, IsLightTheme ? LightBackground : DarkBackground)
+            .Set(MauiControls.Shell.TabBarForegroundColorProperty, IsLightTheme ? DarkOnLightBackground : LightOnDarkBackground)
+            .Set(MauiControls.Shell.TabBarTitleColorProperty, IsLightTheme ? DarkOnLightBackground : LightOnDarkBackground)
             .Set(MauiControls.Shell.TabBarUnselectedColorProperty, IsLightTheme ? Gray900 : Gray200);
 
         NavigationPageStyles.Default = _ => _

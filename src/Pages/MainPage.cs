@@ -1,5 +1,8 @@
-﻿using Balance.Resources.Styles;
+﻿using Balance.Components;
+using Balance.Resources.Styles;
 using MauiReactor;
+using MauiReactor.Compatibility;
+using MauiReactor.Shapes;
 
 namespace Balance.Pages;
 
@@ -12,33 +15,22 @@ public class MainPage : Component<MainPageState>
 {
     public override VisualNode Render()
      => ContentPage(
-            ScrollView(
-                VStack(
-                    Image()
-                        .Source(ApplicationTheme.IconDashboard)
-                        .HeightRequest(200)
-                        .HCenter()
-                        .Set(Microsoft.Maui.Controls.SemanticProperties.DescriptionProperty, "Cute dot net bot waving hi to you!"),
-
-                    Label("Hello, David!")
-                        .FontSize(32)
-                        .HCenter(),
-
-                    Label("Welcome to MauiReactor: .NET MAUI with superpowers!")
-                        .FontSize(18)
-                        .HCenter(),
-
-                    Button(State.Counter == 0 ? "Click me" : $"Clicked {State.Counter} times!")
-                        .OnClicked(()=>SetState(s => s.Counter ++))
-                        .HCenter()
-                        .BackgroundColor(Color.FromArgb("#FF6600"))
-                        .TextColor(Colors.White)
-                        .CornerRadius(12)
-                        .HeightRequest(44)
+            Grid(
+                VScrollView(
+                    VStack(
+                        Label("Projects").ThemeKey("Title2"),
+                        HScrollView(
+                            HStack(
+                                new ProjectCard().Width(200)
+                            )
+                            .Spacing(15)
+                            .Padding(30,0)
+                        )
+                        .Margin(-30,0)
+                    )
+                    .Spacing(ApplicationTheme.LayoutSpacing)
+                    .Padding(ApplicationTheme.LayoutPadding)
                 )
-                .VCenter()
-                .Spacing(25)
-                .Padding(30, 0)
             )
-        );
+        ).Title(DateTime.Now.ToString("dddd, MMM d"));
 }

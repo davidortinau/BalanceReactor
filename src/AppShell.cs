@@ -1,13 +1,18 @@
-﻿using Balance.Pages.Controls;
+﻿using Balance.Controls;
 using Balance.Resources.Styles;
 using MauiReactor;
+using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
+using System.Linq;
+using MauiControls = Microsoft.Maui.Controls;
 
 namespace Balance;
 
 public class AppShellState
 {
-    public string[] ThemeIcons { get; set; }
+    public SegmentItem[] ThemeIcons { get; set; }
+
+    public AppTheme CurrentAppTheme {get;set;}
 }
 
 public class AppShell : Component<AppShellState>
@@ -21,17 +26,27 @@ public class AppShell : Component<AppShellState>
         };
     }
 
+    ~AppShell()
+    {
+        MauiExceptions.UnhandledException -= (sender, args) =>
+        {
+            Debug.WriteLine(args.ExceptionObject);
+            throw (Exception)args.ExceptionObject;
+        };
+    }
+
     protected override void OnMounted()
     {
         base.OnMounted();
 
         var themeIcons = new[]
         {
-            "IconLight",
-            "IconDark"
+            new SegmentItem().ImageSource("IconLight"),
+            new SegmentItem().ImageSource("IconDark")
         };
 
         State.ThemeIcons = themeIcons;
+        State.CurrentAppTheme = Application.Current.UserAppTheme;
     }
     public override VisualNode Render()
         => Shell(
@@ -57,14 +72,41 @@ public class AppShell : Component<AppShellState>
                     .RenderContent(() => new ManageMetaPage())
                     .Route("manage")
             )
+        )
+        .FlyoutFooter(
+            Grid(  
+                HStack(
+                    RadioButton()
+                        .Content("Light")
+                        .Value(AppTheme.Light)
+                        .IsChecked(State.CurrentAppTheme == AppTheme.Light)
+                        .OnCheckedChanged(checkedAction:()=>{
+                            Application.Current.UserAppTheme = AppTheme.Light;
+                        }),
+                    RadioButton()
+                        .Content("Dark")
+                        .Value(AppTheme.Dark)
+                        .IsChecked(State.CurrentAppTheme == AppTheme.Dark)
+                        .OnCheckedChanged(checkedAction:()=>{
+                            Application.Current.UserAppTheme = AppTheme.Dark;
+                        })
+                ).Spacing(10)            
+                // new SegmentedControl
+                //     {
+                //      State.ThemeIcons
+                //     }
+                //     .SegmentWidth(40).SegmentHeight(40)
+
+                //     .OnSelectionChanged((object? sender, SelectionChangedEventArgs args) =>
+                //     {
+                //         // SetState(s => s.CurrentAppTheme = args.CurrentSelection as SegmentItem == State.ThemeIcons[0] ? AppTheme.Light : AppTheme.Dark);
+                //         Application.Current.UserAppTheme = args.CurrentSelection as SegmentItem == State.ThemeIcons[0] ? AppTheme.Light : AppTheme.Dark;
+
+                        
+                //     })
+                    
+            )
+            .Padding(15)
         );
-        // .FlyoutFooter(
-        //     Grid(              
-        //         new SegmentedControl()
-        //             .SegmentWidth(40).SegmentHeight(40)
-        //             .ItemSource(State.ThemeIcons.Select(icon => new SfSegmentItem { ImageSource = icon }).ToList())
-        //     )
-        //     .Padding(15)
-        // );
 }
 
