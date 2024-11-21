@@ -1,19 +1,21 @@
-﻿using MauiReactor;
+﻿using Balance.Resources.Styles;
+using MauiReactor;
 
 namespace Balance.Pages;
 
-class MainPageState
+public class MainPageState
 {
     public int Counter { get; set; }
 }
 
-class MainPage : Component<MainPageState>
+public class MainPage : Component<MainPageState>
 {
     public override VisualNode Render()
      => ContentPage(
             ScrollView(
                 VStack(
-                    Image("dotnet_bot.png")
+                    Image()
+                        .Source(ApplicationTheme.IconDashboard)
                         .HeightRequest(200)
                         .HCenter()
                         .Set(Microsoft.Maui.Controls.SemanticProperties.DescriptionProperty, "Cute dot net bot waving hi to you!"),

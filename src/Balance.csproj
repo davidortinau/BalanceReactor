@@ -72,11 +72,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Reactor.Maui" Version="3.0.3-beta" />
-    <PackageReference Include="Reactor.Maui.Canvas" Version="3.0.3-beta" />
+    <PackageReference Include="Reactor.Maui" Version="3.0.4-beta" />
+    <!-- <PackageReference Include="Reactor.Maui.Canvas" Version="3.0.3-beta" /> -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
 		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.8" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
   </ItemGroup>
+
+  <!-- <ItemGroup>
+    <ProjectReference Include="..\..\reactorui-maui\src\MauiReactor\MauiReactor.csproj" />
+  </ItemGroup> -->
 </Project>

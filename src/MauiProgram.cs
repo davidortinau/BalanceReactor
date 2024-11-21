@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Balance.Pages;
 using Syncfusion.Maui.Toolkit.Hosting;
 using CommunityToolkit.Maui;
+using Microsoft.Maui.Controls.Hosting;
+using Balance.Resources.Styles;
 
 
 namespace Balance;
@@ -13,11 +15,8 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
         builder
-            .UseMauiReactorApp<AppShell>(app =>
-            {
-                app.AddResource("Resources/Styles/Colors.xaml");
-                app.AddResource("Resources/Styles/Styles.xaml");
-                app.AddResource("Resources/Styles/AppStyles.xaml");
+            .UseMauiReactorApp<AppShell>(app =>{
+                app.UseTheme<ApplicationTheme>();
             })
 #if DEBUG
             .EnableMauiReactorHotReload()

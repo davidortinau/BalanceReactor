@@ -1,15 +1,16 @@
 ﻿using Balance.Pages.Controls;
+using Balance.Resources.Styles;
 using MauiReactor;
 using System.Diagnostics;
 
 namespace Balance;
 
-class AppShellState
+public class AppShellState
 {
     public string[] ThemeIcons { get; set; }
 }
 
-class AppShell : Component<AppShellState>
+public class AppShell : Component<AppShellState>
 {
     public AppShell()
     {
@@ -37,8 +38,8 @@ class AppShell : Component<AppShellState>
             FlyoutItem("Dashboard",
                 ShellContent()
                     .Title("Dashboard")
-                    // .FlyoutIcon(new FontImageSource{ FontFamily = FluentUI.FontFamily, Glyph = FluentUI.diagram_24_regular, Color = Colors.Black, Size=24 })   
-                    // .Icon((FontImageSource)Application.Current.Resources["IconDashboard"])
+                    .FlyoutIcon(ApplicationTheme.IconDashboard)   
+                    .Icon(ApplicationTheme.IconDashboard)
                     .RenderContent(() => new MainPage())
                     .Route("main")
             ),

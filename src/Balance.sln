@@ -5,6 +5,14 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Balance", "Balance.csproj", "{94AE91D9-53F1-4735-A8B8-2D984D38C24F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiReactor", "..\..\reactorui-maui\src\MauiReactor\MauiReactor.csproj", "{8EC8C146-401A-4771-9B8B-27D6C380811D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiReactor.Canvas", "..\..\reactorui-maui\src\MauiReactor.Canvas\MauiReactor.Canvas.csproj", "{8A0011CB-A8DE-445C-A80C-6E05B029CE89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiReactor.Scaffold", "..\..\reactorui-maui\src\MauiReactor.Scaffold\MauiReactor.Scaffold.csproj", "{AC77C6E9-FC46-4B3D-A26D-912C4E38F81D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiReactor.ScaffoldGenerator", "..\..\reactorui-maui\src\MauiReactor.ScaffoldGenerator\MauiReactor.ScaffoldGenerator.csproj", "{8D6FA4F4-4A0B-4EA4-9595-72D66C537E7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +26,21 @@ Global
 		{94AE91D9-53F1-4735-A8B8-2D984D38C24F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94AE91D9-53F1-4735-A8B8-2D984D38C24F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94AE91D9-53F1-4735-A8B8-2D984D38C24F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EC8C146-401A-4771-9B8B-27D6C380811D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EC8C146-401A-4771-9B8B-27D6C380811D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EC8C146-401A-4771-9B8B-27D6C380811D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EC8C146-401A-4771-9B8B-27D6C380811D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A0011CB-A8DE-445C-A80C-6E05B029CE89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A0011CB-A8DE-445C-A80C-6E05B029CE89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A0011CB-A8DE-445C-A80C-6E05B029CE89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A0011CB-A8DE-445C-A80C-6E05B029CE89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC77C6E9-FC46-4B3D-A26D-912C4E38F81D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC77C6E9-FC46-4B3D-A26D-912C4E38F81D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC77C6E9-FC46-4B3D-A26D-912C4E38F81D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC77C6E9-FC46-4B3D-A26D-912C4E38F81D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D6FA4F4-4A0B-4EA4-9595-72D66C537E7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D6FA4F4-4A0B-4EA4-9595-72D66C537E7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D6FA4F4-4A0B-4EA4-9595-72D66C537E7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D6FA4F4-4A0B-4EA4-9595-72D66C537E7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
