@@ -3,8 +3,6 @@ using Balance.Resources.Styles;
 using MauiReactor;
 using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
-using System.Linq;
-using MauiControls = Microsoft.Maui.Controls;
 
 namespace Balance;
 
@@ -53,57 +51,56 @@ public class AppShell : Component<AppShellState>
             FlyoutItem("Dashboard",
                 ShellContent()
                     .Title("Dashboard")
-                    .FlyoutIcon(ApplicationTheme.IconDashboard)   
-                    .Icon(ApplicationTheme.IconDashboard)
                     .RenderContent(() => new MainPage())
                     .Route("main")
-            ),
+            ).Icon(()=> ApplicationTheme.IconDashboard),
             FlyoutItem("Projects",
                 ShellContent()
                     .Title("Projects")
-                    // .Icon((FontImageSource)Application.Current.Resources["IconProjects"])
                     .RenderContent(() => new ProjectListPage())
                     .Route("projects")
-            ),
+            ).Icon(()=> ApplicationTheme.IconProjects),
             FlyoutItem("Manage Meta",
                 ShellContent()
                     .Title("Manage Meta")
-                    // .Icon((FontImageSource)Application.Current.Resources["IconMeta"])
                     .RenderContent(() => new ManageMetaPage())
                     .Route("manage")
-            )
+            ).Icon(()=> ApplicationTheme.IconMeta)
         )
         .FlyoutFooter(
             Grid(  
-                HStack(
-                    RadioButton()
-                        .Content("Light")
-                        .Value(AppTheme.Light)
-                        .IsChecked(State.CurrentAppTheme == AppTheme.Light)
-                        .OnCheckedChanged(checkedAction:()=>{
-                            Application.Current.UserAppTheme = AppTheme.Light;
-                        }),
-                    RadioButton()
-                        .Content("Dark")
-                        .Value(AppTheme.Dark)
-                        .IsChecked(State.CurrentAppTheme == AppTheme.Dark)
-                        .OnCheckedChanged(checkedAction:()=>{
-                            Application.Current.UserAppTheme = AppTheme.Dark;
-                        })
-                ).Spacing(10)            
-                // new SegmentedControl
-                //     {
-                //      State.ThemeIcons
-                //     }
-                //     .SegmentWidth(40).SegmentHeight(40)
-
-                //     .OnSelectionChanged((object? sender, SelectionChangedEventArgs args) =>
-                //     {
-                //         // SetState(s => s.CurrentAppTheme = args.CurrentSelection as SegmentItem == State.ThemeIcons[0] ? AppTheme.Light : AppTheme.Dark);
-                //         Application.Current.UserAppTheme = args.CurrentSelection as SegmentItem == State.ThemeIcons[0] ? AppTheme.Light : AppTheme.Dark;
-
-                        
-                //     })
+                new SfSegmentedControl
+                {
+                    new SfSegmentItem()
+                        .Text("Light")
+                        .ImageSource(ResourceHelper.GetResource<FontImageSource>("IconLight")),
+                    new SfSegmentItem()
+                        .Text("Dark")
+                        .ImageSource(ResourceHelper.GetResource<FontImageSource>("IconDark"))
+                }
+                .SelectedIndex(Theme.CurrentAppTheme == AppTheme.Light ? 0 : 1)
+                .OnSelectionChanged((s, e) => Theme.UserTheme = e.NewIndex == 0 ? AppTheme.Light : AppTheme.Dark)
+                .VerticalOptions(LayoutOptions.Center)
+                .HorizontalOptions(LayoutOptions.Center)
+                .SegmentWidth(40)
+                .SegmentHeight(40)
+                // HStack(
+                //     RadioButton()
+                //         .Content("Light")
+                //         .Value(AppTheme.Light)
+                //         .IsChecked(State.CurrentAppTheme == AppTheme.Light)
+                //         .OnCheckedChanged(checkedAction:()=>{
+                //             Application.Current.UserAppTheme = AppTheme.Light;
+                //         }),
+                //     RadioButton()
+                //         .Content("Dark")
+                //         .Value(AppTheme.Dark)
+                //         .IsChecked(State.CurrentAppTheme == AppTheme.Dark)
+                //         .OnCheckedChanged(checkedAction:()=>{
+                //             Application.Current.UserAppTheme = AppTheme.Dark;
+                //         })
+                // ).Spacing(10)            
+                
                     
             )
             .Padding(15)

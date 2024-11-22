@@ -1,10 +1,9 @@
 ﻿using MauiReactor;
-using Microsoft.Extensions.Logging;
-using Balance.Pages;
 using Syncfusion.Maui.Toolkit.Hosting;
 using CommunityToolkit.Maui;
-using Microsoft.Maui.Controls.Hosting;
 using Balance.Resources.Styles;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Controls.Hosting;
 
 
 namespace Balance;
@@ -15,9 +14,7 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
         builder
-            .UseMauiReactorApp<AppShell>(app =>{
-                app.UseTheme<ApplicationTheme>();
-            })
+            .UseMauiApp<App>()
 #if DEBUG
             .EnableMauiReactorHotReload()
 #endif
@@ -32,8 +29,22 @@ public static class MauiProgram
             });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
+        builder.Services.AddLogging(configure => configure.AddDebug());
+        builder.OnMauiReactorUnhandledException(ex =>
+        {
+            System.Diagnostics.Debug.WriteLine(ex);
+        });
 #endif
+        builder.Services.AddSingleton<ProjectRepository>();
+		builder.Services.AddSingleton<TaskRepository>();
+		builder.Services.AddSingleton<CategoryRepository>();
+		builder.Services.AddSingleton<TagRepository>();
+		builder.Services.AddSingleton<SeedDataService>();
+		// builder.Services.AddSingleton<ModalErrorHandler>();
+
+        // builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
+		// builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
 
         return builder.Build();
     }
