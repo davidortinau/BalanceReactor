@@ -3,12 +3,13 @@ using Balance.Resources.Styles;
 using MauiReactor;
 using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
+using System.Linq;
+using MauiControls = Microsoft.Maui.Controls;
 
 namespace Balance;
 
 public class AppShellState
 {
-    public SegmentItem[] ThemeIcons { get; set; }
 
     public AppTheme CurrentAppTheme {get;set;}
 }
@@ -37,13 +38,6 @@ public class AppShell : Component<AppShellState>
     {
         base.OnMounted();
 
-        var themeIcons = new[]
-        {
-            new SegmentItem().ImageSource("IconLight"),
-            new SegmentItem().ImageSource("IconDark")
-        };
-
-        State.ThemeIcons = themeIcons;
         State.CurrentAppTheme = Application.Current.UserAppTheme;
     }
     public override VisualNode Render()
@@ -53,54 +47,35 @@ public class AppShell : Component<AppShellState>
                     .Title("Dashboard")
                     .RenderContent(() => new MainPage())
                     .Route("main")
-            ).Icon(()=> ApplicationTheme.IconDashboard),
+            ).Icon(ResourceHelper.GetResource<FontImageSource>("IconDashboard")),
             FlyoutItem("Projects",
                 ShellContent()
                     .Title("Projects")
                     .RenderContent(() => new ProjectListPage())
                     .Route("projects")
-            ).Icon(()=> ApplicationTheme.IconProjects),
+            ).Icon(ResourceHelper.GetResource<FontImageSource>("IconProjects")),
             FlyoutItem("Manage Meta",
                 ShellContent()
                     .Title("Manage Meta")
                     .RenderContent(() => new ManageMetaPage())
                     .Route("manage")
-            ).Icon(()=> ApplicationTheme.IconMeta)
+            ).Icon(ResourceHelper.GetResource<FontImageSource>("IconMeta"))
         )
         .FlyoutFooter(
-            Grid(  
-                new SfSegmentedControl
-                {
-                    new SfSegmentItem()
-                        .Text("Light")
-                        .ImageSource(ResourceHelper.GetResource<FontImageSource>("IconLight")),
-                    new SfSegmentItem()
-                        .Text("Dark")
-                        .ImageSource(ResourceHelper.GetResource<FontImageSource>("IconDark"))
+            Grid(            
+                new SfSegmentedControl{
+                    new SfSegmentItem().ImageSource(ResourceHelper.GetResource<FontImageSource>("IconLight")),
+                    new SfSegmentItem().ImageSource(ResourceHelper.GetResource<FontImageSource>("IconDark"))
                 }
+                .Background(Colors.Transparent)
+                .ShowSeparator(true)
+                .SegmentCornerRadius(0)
+                .Stroke(Theme.IsLightTheme ? ApplicationTheme.Black : ApplicationTheme.White)
+                .StrokeThickness(1)
                 .SelectedIndex(Theme.CurrentAppTheme == AppTheme.Light ? 0 : 1)
                 .OnSelectionChanged((s, e) => Theme.UserTheme = e.NewIndex == 0 ? AppTheme.Light : AppTheme.Dark)
-                .VerticalOptions(LayoutOptions.Center)
-                .HorizontalOptions(LayoutOptions.Center)
                 .SegmentWidth(40)
                 .SegmentHeight(40)
-                // HStack(
-                //     RadioButton()
-                //         .Content("Light")
-                //         .Value(AppTheme.Light)
-                //         .IsChecked(State.CurrentAppTheme == AppTheme.Light)
-                //         .OnCheckedChanged(checkedAction:()=>{
-                //             Application.Current.UserAppTheme = AppTheme.Light;
-                //         }),
-                //     RadioButton()
-                //         .Content("Dark")
-                //         .Value(AppTheme.Dark)
-                //         .IsChecked(State.CurrentAppTheme == AppTheme.Dark)
-                //         .OnCheckedChanged(checkedAction:()=>{
-                //             Application.Current.UserAppTheme = AppTheme.Dark;
-                //         })
-                // ).Spacing(10)            
-                
                     
             )
             .Padding(15)

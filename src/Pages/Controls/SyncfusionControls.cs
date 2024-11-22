@@ -120,7 +120,7 @@ partial class SfEffectsView
 }
 
 [Scaffold(typeof(Syncfusion.Maui.Toolkit.SegmentedControl.SfSegmentedControl))]
-partial class SegmentedControl
+partial class SfSegmentedControl
 {
     protected override void OnAddChild(VisualNode widget, BindableObject childControl)
     {
@@ -145,7 +145,7 @@ partial class SegmentedControl
 }
 
 [Scaffold(typeof(Syncfusion.Maui.Toolkit.SegmentedControl.SfSegmentItem))]
-partial class SegmentItem
+partial class SfSegmentItem
 {
 
 }
