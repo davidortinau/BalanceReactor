@@ -20,6 +20,8 @@ public class MainPageState
 	public List<ProjectTask> Tasks {get;set;}
 
 	public List<Project> Projects {get;set;}
+
+	public bool HasCompletedTasks => Tasks.Any(t => t.IsCompleted);
     
 }
 
@@ -70,7 +72,17 @@ public partial class MainPage : Component<MainPageState>
                             .Spacing(15)
                             .Padding(30,0)
                         )
-                        .Margin(-30,0)
+                        .Margin(-30,0),
+						Grid(
+							Label("Tasks").ThemeKey("Title2").VCenter(),
+							ImageButton()
+								.Source(ApplicationTheme.IconClean)
+								.IsVisible(State.Tasks.Any(t => t.IsCompleted))
+								.HEnd().VCenter()
+						).HeightRequest(44),
+						VStack(
+							State.Tasks.Select(t => new TaskCard(t)).ToArray()						
+						).Spacing(15)
                     )
                     .Spacing(ApplicationTheme.LayoutSpacing)
                     .Padding(ApplicationTheme.LayoutPadding)
