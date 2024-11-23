@@ -67,7 +67,10 @@ public partial class MainPage : Component<MainPageState>
                         Label("Projects").ThemeKey("Title2"),
                         HScrollView(
                             HStack(
-								State.Projects.Select(p => new ProjectCard(p).Width(200)).ToArray()
+								State.Projects.Select(p => 
+									new ProjectCard(p)
+										.Width(200)
+								).ToArray()
                             )
                             .Spacing(15)
                             .Padding(30,0)

@@ -4,6 +4,7 @@ using CommunityToolkit.Maui;
 using Balance.Resources.Styles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls.Hosting;
+using MauiControls = Microsoft.Maui.Controls;
 
 
 namespace Balance;
@@ -43,7 +44,9 @@ public static class MauiProgram
 		builder.Services.AddSingleton<SeedDataService>();
 		// builder.Services.AddSingleton<ModalErrorHandler>();
 
-        // builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
+        
+        MauiReactor.Routing.RegisterRoute<ProjectDetailsPage>(nameof(ProjectDetailsPage));
+        MauiReactor.Routing.RegisterRoute<ManageMetaPage>(nameof(ManageMetaPage));
 		// builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
 
         return builder.Build();

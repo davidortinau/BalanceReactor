@@ -23,6 +23,8 @@ public class AppShell : Component<AppShellState>
             Debug.WriteLine(args.ExceptionObject);
             throw (Exception)args.ExceptionObject;
         };
+
+        
     }
 
     ~AppShell()
@@ -51,7 +53,7 @@ public class AppShell : Component<AppShellState>
             FlyoutItem("Projects",
                 ShellContent()
                     .Title("Projects")
-                    .RenderContent(() => new ProjectListPage())
+                    .RenderContent(() => new ProjectsPage())
                     .Route("projects")
             ).Icon(ResourceHelper.GetResource<FontImageSource>("IconProjects")),
             FlyoutItem("Manage Meta",

@@ -19,6 +19,8 @@ public partial class ProjectCard : Component<ProjectCardState>
     double _width;
     private Project p;
 
+    [Inject]
+    ILogger<ProjectCard> _logger;
 
     public ProjectCard(Project p)
     {
@@ -61,6 +63,19 @@ public partial class ProjectCard : Component<ProjectCardState>
         )
         .Spacing(15)
     )
+    .OnTapped(() => NavigateToProject(p))
     .WidthRequest(_width)
     .ThemeKey("CardStyle");
+
+    private async void NavigateToProject(Project p)
+    {
+        try{
+                await Microsoft.Maui.Controls.Shell.Current.GoToAsync(
+                    nameof(ManageMetaPage));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error navigating to project details");
+            }
+    }
 }
