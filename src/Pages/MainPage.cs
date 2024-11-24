@@ -84,7 +84,7 @@ public partial class MainPage : Component<MainPageState>
 								.HEnd().VCenter()
 						).HeightRequest(44),
 						VStack(
-							State.Tasks.Select(t => new TaskCard(t)).ToArray()						
+							State.Tasks.Select(t => new TaskCard(t)).ToArray()
 						).Spacing(15)
                     )
                     .Spacing(ApplicationTheme.LayoutSpacing)
