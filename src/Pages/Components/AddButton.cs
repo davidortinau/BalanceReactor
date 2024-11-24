@@ -26,7 +26,7 @@ namespace CommunityTemplate.Pages.Controls
                 .HEnd().VEnd()
                 .Padding(DeviceInfo.Platform == DevicePlatform.WinUI ? new Thickness(0, 2, 4, 0) : new Thickness(0))
                 .Margin(30)
-                .OnTapped(() => NavigateToAdd());
+                .OnClicked(() => NavigateToAdd());
         }
 
         private void NavigateToAdd()

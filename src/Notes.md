@@ -80,3 +80,7 @@ public override VisualNode Render()
 ```
 
 One of the downsides of this architecture is we don't get compile time validation for things like this.
+
+## Mistake: Tapped != Clicked
+
+I had been using OnTapped to handle gestures, but when I implemented a custom `Button` and added `OnTapped` nothing happened. 
