@@ -67,15 +67,20 @@ public partial class ProjectCard : Component<ProjectCardState>
     .WidthRequest(_width)
     .ThemeKey("CardStyle");
 
-    private async void NavigateToProject(Project p)
-    {
-        try{
-                await Microsoft.Maui.Controls.Shell.Current.GoToAsync(
-                    nameof(ManageMetaPage));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error navigating to project details");
-            }
-    }
+    private async void NavigateToProject(Project project)
+	{
+		try{
+			await Microsoft.Maui.Controls.Shell.Current.GoToAsync<ProjectDetailProps>(
+			nameof(ProjectDetailsPage),
+			props =>
+				{
+					props.Project = project;
+				}
+			);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error navigating to project details");
+		}
+	}
 }

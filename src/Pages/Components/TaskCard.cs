@@ -15,6 +15,9 @@ public class TaskCardState
 
 public partial class TaskCard : Component<TaskCardState>
 {
+    [Inject]
+    ILogger<TaskCard> _logger;
+
     private ProjectTask _task;
 
     public TaskCard(ProjectTask task)
@@ -42,6 +45,25 @@ public partial class TaskCard : Component<TaskCardState>
         .Spacing(15)        
         .Padding(DeviceInfo.Platform == DevicePlatform.WinUI ? 20 : 15)
     )
+    .OnTapped(() => NavigateToTaskDetails(_task))
     .StrokeShape(new RoundRectangle().CornerRadius(20))
     .Background(Theme.IsLightTheme ? ApplicationTheme.LightSecondaryBackground : ApplicationTheme.DarkSecondaryBackground);
+
+    private async void NavigateToTaskDetails(ProjectTask task)
+    {
+        try{
+			await Microsoft.Maui.Controls.Shell.Current.GoToAsync<TaskDetailsProps>(
+			nameof(TaskDetailsPage),
+			props =>
+				{
+					props.Task = task;
+                    props.IsExistingProject = true;
+				}
+			);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error navigating to task details");
+		}
+    }
 }

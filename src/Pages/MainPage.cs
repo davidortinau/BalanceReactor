@@ -43,6 +43,9 @@ public partial class MainPage : Component<MainPageState>
     [Inject]
     SeedDataService _seedDataService;
 
+	[Inject]
+	ILogger<MainPage> _logger;
+
     protected override async void OnMounted()
     {
         base.OnMounted();
@@ -70,6 +73,7 @@ public partial class MainPage : Component<MainPageState>
 								State.Projects.Select(p => 
 									new ProjectCard(p)
 										.Width(200)
+										
 								).ToArray()
                             )
                             .Spacing(15)
@@ -154,5 +158,5 @@ public partial class MainPage : Component<MainPageState>
 		{
 			State.IsRefreshing = false;
 		}
-	}
+	}	
 }

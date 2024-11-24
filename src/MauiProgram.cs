@@ -47,6 +47,7 @@ public static class MauiProgram
         
         MauiReactor.Routing.RegisterRoute<ProjectDetailsPage>(nameof(ProjectDetailsPage));
         MauiReactor.Routing.RegisterRoute<ManageMetaPage>(nameof(ManageMetaPage));
+        MauiReactor.Routing.RegisterRoute<TaskDetailsPage>(nameof(TaskDetailsPage));
 		// builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
 
         return builder.Build();
