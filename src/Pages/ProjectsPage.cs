@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Balance.Data;
 using Balance.Models;
 using Balance.Resources.Styles;
+using CommunityTemplate.Pages.Controls;
 using MauiReactor;
 using Microsoft.Extensions.Logging;
 
@@ -62,11 +63,8 @@ namespace Balance.Pages
                         ).ToArray()
                     )
                     .Spacing(ApplicationTheme.LayoutSpacing)
-                    .Padding(ApplicationTheme.LayoutPadding)
-                    // new AddButton
-                    // {
-                    //     Command = new Command(AddProject)
-                    // }
+                    .Padding(ApplicationTheme.LayoutPadding),
+                    new AddButton().IsTask(false)
                 )
             );
 

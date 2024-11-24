@@ -2,6 +2,7 @@ using System.Linq;
 using Balance.Components;
 using Balance.Controls;
 using Balance.Resources.Styles;
+using CommunityTemplate.Pages.Controls;
 using MauiReactor;
 using MauiReactor.Shapes;
 using Microsoft.Maui.Devices;
@@ -142,7 +143,8 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
                     .Spacing(ApplicationTheme.LayoutSpacing)
                     .Padding(ApplicationTheme.LayoutPadding)
                     
-                )//ScrollView
+                ), //ScrollView
+                new AddButton().IsTask(true)
             )//Grid
             
         );//ContentPage

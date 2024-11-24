@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Balance.Components;
 using Balance.Resources.Styles;
+using CommunityTemplate.Pages.Controls;
 using MauiReactor;
 using MauiReactor.Compatibility;
 using MauiReactor.Shapes;
@@ -93,7 +94,8 @@ public partial class MainPage : Component<MainPageState>
                     )
                     .Spacing(ApplicationTheme.LayoutSpacing)
                     .Padding(ApplicationTheme.LayoutPadding)
-                )
+                ),
+				new AddButton().IsTask(true)
             )
         ).Title(DateTime.Now.ToString("dddd, MMM d"));
 
