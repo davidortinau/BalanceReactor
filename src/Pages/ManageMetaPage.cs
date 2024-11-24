@@ -22,6 +22,9 @@ partial class ManageMetaPage : Component<ManageMetaState>
 
     [Inject]
     TagRepository _tagRepository;
+    
+    [Inject]
+    SeedDataService _seedDataService;
 
     protected override async void OnMounted()
     {
@@ -33,7 +36,7 @@ partial class ManageMetaPage : Component<ManageMetaState>
 
     public override VisualNode Render()
         => ContentPage(
-            ToolbarItem("Reset App").OnClicked(() => ResetApp()),
+            ToolbarItem("Reset App").OnClicked(ResetAppAsync),
             ScrollView(
                 VStack(
                     Label("Categories").ThemeKey("Title2"),
@@ -41,9 +44,9 @@ partial class ManageMetaPage : Component<ManageMetaState>
                         State.Categories.Select(c => RenderCategory(c)).ToArray()
                     ).Spacing(ApplicationTheme.LayoutSpacing),
 
-                    Grid("Auto,Auto", "*",
-                        Button("Save").HeightRequest(ApplicationTheme.ButtonMinimumSize).OnClicked(() => SaveCategories()),
-                        Button().ImageSource(ApplicationTheme.IconAdd).Style("SquareButton").OnClicked(() => AddCategory()).GridColumn(1)
+                    Grid("Auto","*,Auto",
+                        Button("Save").HeightRequest(ApplicationTheme.ButtonMinimumSize).OnClicked(SaveCategoriesAsync),
+                        Button().ImageSource(ApplicationTheme.IconAdd).Style("SquareButton").OnClicked(AddCategoryAsync).GridColumn(1)
                     ).ColumnSpacing(ApplicationTheme.LayoutSpacing).Margin(0, 10),
 
                     Label("Tags").ThemeKey("Title2"),
@@ -51,9 +54,9 @@ partial class ManageMetaPage : Component<ManageMetaState>
                         State.Tags.Select(t => RenderTag(t)).ToArray()
                     ).Spacing(ApplicationTheme.LayoutSpacing),
 
-                    Grid("Auto,Auto", "*",
-                        Button("Save").HeightRequest(ApplicationTheme.ButtonMinimumSize).OnClicked(() => SaveTags()),
-                        Button().ImageSource(ApplicationTheme.IconAdd).Style("SquareButton").OnClicked(() => AddTag()).GridColumn(1)
+                    Grid("Auto", "*,Auto",
+                        Button("Save").HeightRequest(ApplicationTheme.ButtonMinimumSize).OnClicked(() => SaveTagsAsync()),
+                        Button().ImageSource(ApplicationTheme.IconAdd).Style("SquareButton").OnClicked(() => AddTagAsync()).GridColumn(1)
                     ).ColumnSpacing(ApplicationTheme.LayoutSpacing).Margin(0, 10)
                 ).Spacing(ApplicationTheme.LayoutSpacing).Padding(ApplicationTheme.LayoutPadding)
             )
@@ -62,8 +65,8 @@ partial class ManageMetaPage : Component<ManageMetaState>
     private VisualNode RenderCategory(Category category)
     {
         return Grid("Auto","4*,3*,30,Auto",
-            Entry().Text(category.Title).GridColumn(0),
-            Entry().Text(category.Color).GridColumn(1),
+            Entry().Text(category.Title).GridColumn(0).OnTextChanged((s) => category.Title = s),
+            Entry().Text(category.Color).GridColumn(1).OnTextChanged((s) => category.Color = s),
             // .Behaviors(new TextValidationBehavior
             // {
             //     InvalidStyle = "InvalidEntryStyle",
@@ -71,15 +74,15 @@ partial class ManageMetaPage : Component<ManageMetaState>
             //     RegexPattern = "^#(?:[0-9a-fA-F]{3}){1,2}$"
             // }),
             BoxView().HeightRequest(30).WidthRequest(30).VerticalOptions(LayoutOptions.Center).Color(Color.FromArgb(category.Color)).GridColumn(2),
-            Button().ImageSource(ApplicationTheme.IconDelete).BackgroundColor(Colors.Transparent).OnClicked(() => DeleteCategory(category)).GridColumn(3)
+            Button().ImageSource(ApplicationTheme.IconDelete).BackgroundColor(Colors.Transparent).OnClicked(async () => await DeleteCategoryAsync(category)).GridColumn(3)
         ).ColumnSpacing(ApplicationTheme.LayoutSpacing);
     }
 
     private VisualNode RenderTag(Tag tag)
     {
         return Grid("Auto","4*,3*,30,Auto",
-            Entry().Text(tag.Title).GridColumn(0),
-            Entry().Text(tag.Color).GridColumn(1),
+            Entry().Text(tag.Title).GridColumn(0).OnTextChanged((s) => tag.Title = s),
+            Entry().Text(tag.Color).GridColumn(1).OnTextChanged((s) => tag.Color = s),
             // .Behaviors(new TextValidationBehavior
             // {
             //     InvalidStyle = "InvalidEntryStyle",
@@ -87,42 +90,69 @@ partial class ManageMetaPage : Component<ManageMetaState>
             //     RegexPattern = "^#(?:[0-9a-fA-F]{3}){1,2}$"
             // }),
             BoxView().HeightRequest(30).WidthRequest(30).VerticalOptions(LayoutOptions.Center).Color(Color.FromArgb(tag.Color)).GridColumn(2),
-            Button().ImageSource(ApplicationTheme.IconDelete).BackgroundColor(Colors.Transparent).OnClicked(() => DeleteTag(tag)).GridColumn(3)
+            Button().ImageSource(ApplicationTheme.IconDelete).BackgroundColor(Colors.Transparent).OnClicked(() => DeleteTagAsync(tag)).GridColumn(3)
         ).ColumnSpacing(ApplicationTheme.LayoutSpacing);
     }
 
-    private void ResetApp()
+    async Task ResetAppAsync()
     {
-        throw new NotImplementedException();
+        Preferences.Default.Remove("is_seeded");
+        await _seedDataService.LoadSeedDataAsync();
+        Preferences.Default.Set("is_seeded", true);
+        await Microsoft.Maui.Controls.Shell.Current.GoToAsync("//main");
     }
 
-    private void SaveCategories()
+    async Task SaveCategoriesAsync()
     {
-        throw new NotImplementedException();
+        foreach (var category in State.Categories)
+        {
+            await _categoryRepository.SaveItemAsync(category);
+        }
+
+        await AppShell.DisplayToastAsync("Categories saved");
     }
 
-    private void AddCategory()
+    async Task AddCategoryAsync()
     {
-        throw new NotImplementedException();
+        var category = new Category();
+		State.Categories.Add(category);
+        await _categoryRepository.SaveItemAsync(category);
+		await AppShell.DisplayToastAsync("Category added");
+        Invalidate();
     }
 
-    private void DeleteCategory(Category category)
+    async Task DeleteCategoryAsync(Category category)
     {
-        throw new NotImplementedException();
+        State.Categories.Remove(category);
+		await _categoryRepository.DeleteItemAsync(category);
+		await AppShell.DisplayToastAsync("Category deleted");
+        Invalidate();
     }
 
-    private void SaveTags()
+    async Task SaveTagsAsync()
     {
-        throw new NotImplementedException();
+        foreach (var tag in State.Tags)
+        {
+            await _tagRepository.SaveItemAsync(tag);
+        }
+
+        await AppShell.DisplayToastAsync("Tags saved");
     }
 
-    private void AddTag()
+    private async Task AddTagAsync()
     {
-        throw new NotImplementedException();
+        var tag = new Tag();
+        State.Tags.Add(tag);
+        await _tagRepository.SaveItemAsync(tag);
+        await AppShell.DisplayToastAsync("Tag added");
+        Invalidate();
     }
 
-    private void DeleteTag(Tag tag)
+    async Task DeleteTagAsync(Tag tag)
     {
-        throw new NotImplementedException();
+        State.Tags.Remove(tag);
+        await _tagRepository.DeleteItemAsync(tag);
+        await AppShell.DisplayToastAsync("Tag deleted");
+        Invalidate();
     }
 }

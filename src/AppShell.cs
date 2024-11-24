@@ -1,9 +1,12 @@
 ﻿using Balance.Controls;
 using Balance.Resources.Styles;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 using MauiReactor;
 using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
 using System.Linq;
+using Font = Microsoft.Maui.Font;
 using MauiControls = Microsoft.Maui.Controls;
 
 namespace Balance;
@@ -23,8 +26,6 @@ public class AppShell : Component<AppShellState>
             Debug.WriteLine(args.ExceptionObject);
             throw (Exception)args.ExceptionObject;
         };
-
-        
     }
 
     ~AppShell()
@@ -82,5 +83,36 @@ public class AppShell : Component<AppShellState>
             )
             .Padding(15)
         );
+
+    public static async Task DisplaySnackbarAsync(string message)
+	{
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+		var snackbarOptions = new SnackbarOptions
+		{
+			BackgroundColor = Color.FromArgb("#FF3300"),
+			TextColor = Colors.White,
+			ActionButtonTextColor = Colors.Yellow,
+			CornerRadius = new CornerRadius(0),
+			Font = Font.SystemFontOfSize(18),
+			ActionButtonFont = Font.SystemFontOfSize(14)
+		};
+
+		var snackbar = Snackbar.Make(message, visualOptions: snackbarOptions);
+
+		await snackbar.Show(cancellationTokenSource.Token);
+	}
+
+	public static async Task DisplayToastAsync(string message)
+	{
+		// Toast is currently not working in MCT on Windows
+		if (OperatingSystem.IsWindows())
+			return;
+
+		var toast = Toast.Make(message, textSize: 18);
+
+		var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+		await toast.Show(cts.Token);
+	}
 }
 
