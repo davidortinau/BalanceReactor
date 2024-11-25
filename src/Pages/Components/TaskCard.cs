@@ -34,16 +34,16 @@ public partial class TaskCard : Component<TaskCardState>
 
     public override VisualNode Render()
     => Border(
-        HStack(
+        Grid("*","Auto,*",
             CheckBox()
                 .IsChecked(State.IsCompleted)
                 .OnCheckedChanged((s, e) => SetState(s => s.IsCompleted = e.Value)),
             Label(State.Title)
+                .GridColumn(1)
                 .VerticalOptions(LayoutOptions.Center)
                 .LineBreakMode(LineBreakMode.TailTruncation)
-        )
-        .Spacing(15)        
-        .Padding(DeviceInfo.Platform == DevicePlatform.WinUI ? 20 : 15)
+        )   
+        .ColumnSpacing(15)
     )
     .OnTapped(() => NavigateToTaskDetails(_task))
     .StrokeShape(new RoundRectangle().CornerRadius(20))

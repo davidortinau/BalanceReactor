@@ -115,18 +115,16 @@ partial class ManageMetaPage : Component<ManageMetaState>
     async Task AddCategoryAsync()
     {
         var category = new Category();
-		State.Categories.Add(category);
+        SetState(s => s.Categories.Add(category));
         await _categoryRepository.SaveItemAsync(category);
 		await AppShell.DisplayToastAsync("Category added");
-        Invalidate();
     }
 
     async Task DeleteCategoryAsync(Category category)
     {
-        State.Categories.Remove(category);
+        SetState(s => s.Categories.Remove(category));
 		await _categoryRepository.DeleteItemAsync(category);
 		await AppShell.DisplayToastAsync("Category deleted");
-        Invalidate();
     }
 
     async Task SaveTagsAsync()
@@ -142,17 +140,15 @@ partial class ManageMetaPage : Component<ManageMetaState>
     private async Task AddTagAsync()
     {
         var tag = new Tag();
-        State.Tags.Add(tag);
+        SetState(s => s.Tags.Add(tag));
         await _tagRepository.SaveItemAsync(tag);
         await AppShell.DisplayToastAsync("Tag added");
-        Invalidate();
     }
 
     async Task DeleteTagAsync(Tag tag)
     {
-        State.Tags.Remove(tag);
+        SetState(s => s.Tags.Remove(tag));
         await _tagRepository.DeleteItemAsync(tag);
         await AppShell.DisplayToastAsync("Tag deleted");
-        Invalidate();
     }
 }

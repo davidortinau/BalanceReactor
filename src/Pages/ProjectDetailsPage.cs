@@ -49,6 +49,15 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
     [Inject]
     CategoryRepository _categoryRepository;
 
+    [Inject]
+    ProjectRepository _projectRepository;
+
+    [Inject]
+    TagRepository _tagRepository;
+
+    [Inject]
+    TaskRepository _taskRepository;
+
     protected override async void OnMounted(){
         _project = Props.Project;
         State.Name = _project.Name;
@@ -67,20 +76,20 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
 
     public override VisualNode Render()
         => ContentPage(
-            ToolbarItem("Delete").OnClicked(() => DeleteProject()).IsDestructive(true),
+            ToolbarItem("Delete").OnClicked(() => DeleteProjectAsync()).IsDestructive(true),
             Grid(
                 ScrollView(
                     VStack(
                         new SfTextInputLayout{
                             Entry()
-                                .Text(State.Name).OnTextChanged((s, e) => State.Name = e.NewTextValue)
+                                .Text(State.Name).OnTextChanged((s, e) => SetState(s => s.Name = e.NewTextValue))
                         }
                         .Hint("Name"),
                         
                         new SfTextInputLayout
                         {
                             Entry()
-                                .Text(State.Description).OnTextChanged((s, e) => State.Description = e.NewTextValue)
+                                .Text(State.Description).OnTextChanged((s, e) => SetState(s => s.Description = e.NewTextValue))
                         }
                         .Hint("Description"),
 
@@ -89,7 +98,7 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
                             Picker()
                                 .ItemsSource(State.Categories.Select(c => c.Title).ToList())
                                 .SelectedIndex(State.SelectedCategoryIndex)
-                                .OnSelectedIndexChanged(index => State.CategoryID = State.Categories[index].ID)
+                                .OnSelectedIndexChanged(OnCategorySelected)
                         }
                         .Hint("Category"),
 
@@ -101,7 +110,8 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
                             .SelectionMode(SelectionMode.Single)
                             .ItemsSource(State.Icons, RenderIcon)
                             .SelectedItem(State.ProjectIcon)
-                            .ItemsLayout(new HorizontalLinearItemsLayout().ItemSpacing(ApplicationTheme.LayoutSpacing)),
+                            .ItemsLayout(new HorizontalLinearItemsLayout().ItemSpacing(ApplicationTheme.LayoutSpacing))
+                            .OnSelected<MauiReactor.CollectionView,string>(OnIconSelected),
 
                         Label("Tags")
                             .ThemeKey("Title2"),
@@ -118,7 +128,7 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
 
                         Button("Save")
                             .HeightRequest(DeviceInfo.Platform == DevicePlatform.WinUI ? 60 : 44)
-                            .OnClicked(() => SaveProject()),
+                            .OnClicked(() => SaveProjectAsync()),
 
                         Grid(
                             Label()
@@ -132,7 +142,7 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
                                 .HeightRequest(44)
                                 .WidthRequest(44)
                                 .IsVisible(State.HasCompletedTasks)
-                                .OnClicked(()=>CleanUpTasks())
+                                .OnClicked(CleanUpTasksAsync)
                         ).HeightRequest(44),
                         VStack(
                             State.Tasks.Select(t => new TaskCard(t)).ToArray()						
@@ -148,6 +158,17 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
             )//Grid
             
         );//ContentPage
+
+    private void OnCategorySelected(int index)
+    {
+        SetState(s => s.CategoryID = State.Categories[index].ID);
+        SetState(s => s.SelectedCategoryIndex = index);
+    }
+
+    private void OnIconSelected(string icon)
+    {
+        SetState(s => s.ProjectIcon = icon);
+    }
 
     private VisualNode RenderChip(Tag t)
     {
@@ -190,19 +211,69 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
         throw new NotImplementedException();
     }
 
-    private void CleanUpTasks()
+    private async Task CleanUpTasksAsync()
     {
-        throw new NotImplementedException();
+        var completedTasks = State.Tasks.Where(t => t.IsCompleted).ToArray();
+        foreach (var task in completedTasks)
+        {
+            await _taskRepository.DeleteItemAsync(task);
+            State.Tasks.Remove(task);
+        }
+
+        SetState(s => s.Tasks = new List<ProjectTask>(State.Tasks));
+        await AppShell.DisplayToastAsync("All cleaned up!");
     }
 
-    private void SaveProject()
+    private async Task SaveProjectAsync()
     {
-        throw new NotImplementedException();
+        if (_project == null)
+        {
+            // Handle error
+            return;
+        }
+
+        _project.Name = State.Name;
+        _project.Description = State.Description;
+        _project.CategoryID = State.CategoryID;
+        _project.Icon = State.ProjectIcon;
+
+        await _projectRepository.SaveItemAsync(_project);
+
+        if (_project.IsNullOrNew())
+        {
+            foreach (var tag in State.Tags)
+            {
+                if (tag.IsSelected)
+                {
+                    await _tagRepository.SaveItemAsync(tag, _project.ID);
+                }
+            }
+        }
+
+        foreach (var task in State.Tasks)
+        {
+            if (task.ID == 0)
+            {
+                task.ProjectID = _project.ID;
+                await _taskRepository.SaveItemAsync(task);
+            }
+        }
+
+        await Microsoft.Maui.Controls.Shell.Current.GoToAsync("..");
+        await AppShell.DisplayToastAsync("Project saved");
     }
 
-    private void DeleteProject()
+    private async Task DeleteProjectAsync()
     {
-        throw new NotImplementedException();
+        if (_project == null)
+        {
+            // Handle error
+            return;
+        }
+
+        await _projectRepository.DeleteItemAsync(item: _project);
+        await Microsoft.Maui.Controls.Shell.Current.GoToAsync("..");
+        await AppShell.DisplayToastAsync("Project deleted");
     }
 
     private VisualNode RenderIcon(string item)

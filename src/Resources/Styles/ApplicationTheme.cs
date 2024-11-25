@@ -158,8 +158,10 @@ class ApplicationTheme : Theme
 
         BorderStyles.Default = _ => _
             .Stroke(IsLightTheme ? Gray200 : Gray500)
-            .StrokeShape(new Rectangle())
-            .StrokeThickness(1);
+            .Background(IsLightTheme ? LightSecondaryBackground : DarkSecondaryBackground)
+            .StrokeShape(new RoundRectangle().CornerRadius(20))
+            .StrokeThickness(0)
+            .Padding(DeviceInfo.Idiom == DeviceIdiom.Desktop ? 20 : 15);
 
 
         BoxViewStyles.Default = _ => _
@@ -205,10 +207,10 @@ class ApplicationTheme : Theme
 
 
         EntryStyles.Default = _ => _
-            .TextColor(IsLightTheme ? Black : White)
+            .TextColor(IsLightTheme ? DarkOnLightBackground : LightOnDarkBackground)
             .BackgroundColor(Colors.Transparent)
             .FontFamily("OpenSansRegular")
-            .FontSize(14)
+            .FontSize(DeviceInfo.Current.Idiom == DeviceIdiom.Desktop ? 24 : 18)
             .PlaceholderColor(IsLightTheme ? Gray200 : Gray500)
             .MinimumHeightRequest(44)
             .MinimumWidthRequest(44)
@@ -340,7 +342,7 @@ class ApplicationTheme : Theme
             .TitleColor(IsLightTheme ? Gray900 : Gray200)
             .BackgroundColor(Colors.Transparent)
             .FontFamily("OpenSansRegular")
-            .FontSize(14)
+            .FontSize(DeviceIdiom.Desktop == DeviceInfo.Idiom ? 24 : 18)
             .MinimumHeightRequest(44)
             .MinimumWidthRequest(44)
             .VisualState("CommonStates", "Disable", MauiControls.Picker.TextColorProperty, IsLightTheme ? Gray300 : Gray600)
