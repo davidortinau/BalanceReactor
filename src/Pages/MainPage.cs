@@ -9,30 +9,30 @@ using MauiControls = Microsoft.Maui.Controls;
 
 namespace Balance.Pages;
 
-public class MainPageState
+class MainPageState
 {
     public bool IsBusy { get; set; }
 
     public bool IsRefreshing { get; set; }
 
-    public List<CategoryChartData> TodoCategoryData {get;set;}
+    public List<CategoryChartData> TodoCategoryData {get;set;} = [];
 
-	public List<Brush> TodoCategoryColors {get;set;}
+	public List<Brush> TodoCategoryColors {get;set;} = [];
 
-	public List<ProjectTask> Tasks {get;set;}
+	public List<ProjectTask> Tasks {get;set;} = [];
 
-	public List<Project> Projects {get;set;}
+	public List<Project> Projects {get;set;} = [];
+
+	public bool IsNavigatedTo {get;set;}
+
+	public bool IsDataLoaded {get;set;}
 
 	public bool HasCompletedTasks => Tasks.Any(t => t.IsCompleted);
     
 }
 
-public partial class MainPage : Component<MainPageState>
+partial class MainPage : Component<MainPageState>
 {
-    private bool _dataLoaded;
-
-    private bool _isNavigatedTo;
-
     [Inject]
     ProjectRepository _projectRepository;
 
@@ -48,19 +48,12 @@ public partial class MainPage : Component<MainPageState>
 	[Inject]
 	ILogger<MainPage> _logger;
 
-	override protected async void OnMounted()
+	[Inject]
+    ModalErrorHandler _errorHandler;
+
+	public override VisualNode Render()
 	{
-		base.OnMounted();
-
-		if (!_dataLoaded)
-		{
-			await InitData(_seedDataService);
-			_dataLoaded = true;
-		}
-	}
-
-    public override VisualNode Render()
-     => ContentPage(
+      return ContentPage(DateTime.Now.ToString("dddd, MMM d"),
             Grid(
                 VScrollView(
                     VStack(
@@ -83,6 +76,7 @@ public partial class MainPage : Component<MainPageState>
 								.Source(ApplicationTheme.IconClean)
 								.IsVisible(State.Tasks.Any(t => t.IsCompleted))
 								.HEnd().VCenter()
+								.OnClicked(CleanUpTasks)
 						).HeightRequest(44),
 						VStack(
 							State.Tasks.Select(t => new TaskCard(t)).ToArray()
@@ -94,27 +88,44 @@ public partial class MainPage : Component<MainPageState>
 				new AddButton().IsTask(true)
             )
         )
-		.Title(DateTime.Now.ToString("dddd, MMM d"))
-		.OnNavigatedTo(() => _isNavigatedTo = true)
-		.OnNavigatedFrom(() => _isNavigatedTo = false)
+		.OnNavigatedTo(() => State.IsNavigatedTo = true)
+		.OnNavigatedFrom(() => State.IsNavigatedTo = false)
 		.OnAppearing(OnAppearingAsync);
+	}
 
-    private async Task OnAppearingAsync()
+    void CleanUpTasks()
     {
-        if (!_isNavigatedTo)
-		{
-			await Refresh();
-			Invalidate();
-		}
+        throw new NotImplementedException();
     }
 
-    private async Task LoadData()
+    async Task OnAppearingAsync()
+    {
+        if (!State.IsDataLoaded)
+        {
+            bool isSeeded = Preferences.Default.ContainsKey("is_seeded");
+
+            if (!isSeeded)
+            {
+                await _seedDataService.LoadSeedDataAsync();
+            }
+
+            Preferences.Default.Set("is_seeded", true);
+
+            await Refresh();
+			State.IsDataLoaded = true;
+        }
+        // This means we are being navigated to
+        else if (!State.IsNavigatedTo)
+        {
+            await Refresh();
+        }
+    }
+
+    async Task LoadData()
 	{
 		try
 		{
-			State.IsBusy = true;
-
-			State.Projects = await _projectRepository.ListAsync();
+			SetState(s => s.IsBusy = true);
 
 			var chartData = new List<CategoryChartData>();
 			var chartColors = new List<Brush>();
@@ -130,44 +141,33 @@ public partial class MainPage : Component<MainPageState>
 				chartData.Add(new(category.Title, tasksCount));
 			}
 
-			State.TodoCategoryData = chartData;
-			State.TodoCategoryColors = chartColors;
-
-			State.Tasks = await _taskRepository.ListAsync();
+			SetState(async s => {
+				s.Projects = await _projectRepository.ListAsync();
+				s.TodoCategoryColors = chartColors;
+				s.TodoCategoryData = chartData;
+				s.Tasks = await _taskRepository.ListAsync();
+			});
 		}
 		finally
 		{
-			State.IsBusy = false;
+			SetState(s => s.IsBusy = false);
 		}
-	}
-
-	private async Task InitData(SeedDataService seedDataService)
-	{
-		bool isSeeded = Preferences.Default.ContainsKey("is_seeded");
-
-		if (!isSeeded)
-		{
-			await seedDataService.LoadSeedDataAsync();
-		}
-
-		Preferences.Default.Set("is_seeded", true);
-		await Refresh();
 	}
 
     private async Task Refresh()
 	{
 		try
-		{
-			SetState(s => s.IsRefreshing = true);
-			await LoadData();
-		}
-		catch (Exception e)
-		{
-			// _errorHandler.HandleError(e);
-		}
-		finally
-		{
-			SetState(s => s.IsRefreshing = false);
-		}
+        {
+            SetState(s => s.IsRefreshing = true);
+            await LoadData();
+        }
+        catch (Exception e)
+        {
+            _errorHandler.HandleError(e);
+        }
+        finally
+        {
+            SetState(s => s.IsRefreshing = false);
+        }
 	}	
 }

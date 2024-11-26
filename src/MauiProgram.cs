@@ -42,7 +42,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<CategoryRepository>();
 		builder.Services.AddSingleton<TagRepository>();
 		builder.Services.AddSingleton<SeedDataService>();
-		// builder.Services.AddSingleton<ModalErrorHandler>();
+		builder.Services.AddSingleton<ModalErrorHandler>();
 
         
         MauiReactor.Routing.RegisterRoute<ProjectDetailsPage>(nameof(ProjectDetailsPage));
