@@ -4,6 +4,7 @@ using MauiReactor;
 using MauiReactor.Shapes;
 using Balance.Models;
 using Microsoft.Maui.Devices;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Balance.Components;
 
@@ -15,14 +16,25 @@ public class TaskCardState
 
 public partial class TaskCard : Component<TaskCardState>
 {
+    private Func<Task>? _action;
+
     [Inject]
     ILogger<TaskCard> _logger;
+
+    [Inject]
+    TaskRepository _taskRepository;
 
     private ProjectTask _task;
 
     public TaskCard(ProjectTask task)
     {
         _task = task;
+    }
+
+    public Component OnCheckChanged(Func<Task> action)
+    {
+        _action = action;
+        return this;
     }
 
     protected override void OnMounted()
@@ -37,7 +49,7 @@ public partial class TaskCard : Component<TaskCardState>
         Grid("*","Auto,*",
             CheckBox()
                 .IsChecked(State.IsCompleted)
-                .OnCheckedChanged((s, e) => SetState(s => s.IsCompleted = e.Value)),
+                .OnCheckedChanged(HandleCheckChanged),
             Label(State.Title)
                 .GridColumn(1)
                 .VerticalOptions(LayoutOptions.Center)
@@ -48,6 +60,17 @@ public partial class TaskCard : Component<TaskCardState>
     .OnTapped(() => NavigateToTaskDetails(_task))
     .StrokeShape(new RoundRectangle().CornerRadius(20))
     .Background(Theme.IsLightTheme ? ApplicationTheme.LightSecondaryBackground : ApplicationTheme.DarkSecondaryBackground);
+
+    private async void HandleCheckChanged(object s, CheckedChangedEventArgs e)
+    {
+        _task.IsCompleted = e.Value;
+        SetState(s => s.IsCompleted = e.Value);
+        await Services.GetRequiredService<TaskRepository>().SaveItemAsync(_task);
+        if (_action != null)
+        {
+            await _action.Invoke();
+        }
+    }
 
     private async void NavigateToTaskDetails(ProjectTask task)
     {

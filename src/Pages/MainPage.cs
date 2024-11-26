@@ -27,7 +27,7 @@ class MainPageState
 
 	public bool IsDataLoaded {get;set;}
 
-	public bool HasCompletedTasks => Tasks.Any(t => t.IsCompleted);
+	public bool HasCompletedTasks {get;set;}
     
 }
 
@@ -74,12 +74,12 @@ partial class MainPage : Component<MainPageState>
 							Label("Tasks").ThemeKey("Title2").VCenter(),
 							ImageButton()
 								.Source(ApplicationTheme.IconClean)
-								.IsVisible(State.Tasks.Any(t => t.IsCompleted))
+								.IsVisible(State.HasCompletedTasks)
 								.HEnd().VCenter()
-								.OnClicked(CleanUpTasks)
+								.OnClicked(CleanUpTasksAsync)
 						).HeightRequest(44),
 						VStack(
-							State.Tasks.Select(t => new TaskCard(t)).ToArray()
+							State.Tasks.Select(t => new TaskCard(t).OnCheckChanged(CheckCompletedTasks)).ToArray()
 						).Spacing(15)
                     )
                     .Spacing(ApplicationTheme.LayoutSpacing)
@@ -93,9 +93,29 @@ partial class MainPage : Component<MainPageState>
 		.OnAppearing(OnAppearingAsync);
 	}
 
-    void CleanUpTasks()
+    async Task CheckCompletedTasks()
     {
-        throw new NotImplementedException();
+		// await _taskRepository.SaveItemAsync(task);
+
+        SetState(async s => {
+			s.Tasks = await _taskRepository.ListAsync();
+			s.HasCompletedTasks = s.Tasks.Any(t => t.IsCompleted);
+		});
+    }
+
+    async Task CleanUpTasksAsync()
+    {
+        var completedTasks = State.Tasks.Where(t => t.IsCompleted).ToList();
+		foreach (var task in completedTasks)
+		{
+			await _taskRepository.DeleteItemAsync(task);
+		}
+
+		SetState(async s => {
+			s.Tasks = await _taskRepository.ListAsync();
+			s.HasCompletedTasks = false;
+		});
+
     }
 
     async Task OnAppearingAsync()
