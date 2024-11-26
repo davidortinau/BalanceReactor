@@ -21,6 +21,7 @@ class ProjectDetailsState
     public int CategoryID { get; internal set; }
     public List<ProjectTask> Tasks { get; internal set; }
     public List<Tag> Tags { get; internal set; }
+    public List<Tag> AllTags { get; internal set; }
     public string ProjectIcon { get; internal set; }
 
     public List<Category> Categories { get; internal set; }
@@ -66,6 +67,14 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
         State.CategoryID = _project.CategoryID;
         State.Tasks = _project.Tasks;
         State.Tags = _project.Tags;
+        
+        var allTags = await _tagRepository.ListAsync();
+        foreach (var tag in allTags)
+        {
+            tag.IsSelected = State.Tags.Any(t => t.ID == tag.ID);
+        }
+        State.AllTags = new List<Tag>(allTags);
+
 
         State.Categories = await _categoryRepository.ListAsync();
 
@@ -117,7 +126,7 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
                             .ThemeKey("Title2"),
                         ScrollView(
                             HStack(
-                                State.Tags.Select(t =>
+                                State.AllTags.Select(t =>
                                     RenderChip(t)
                                 ).ToArray()
                             )
@@ -133,7 +142,7 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
                         Grid(
                             Label()
                                 .Text("Tasks")
-                                .Style("Title2")
+                                .ThemeKey("Title2")
                                 .VCenter(),
                             ImageButton()
                                 .Source(ApplicationTheme.IconClean)
@@ -184,9 +193,9 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
             .StrokeShape(new RoundRectangle().CornerRadius(22))
             .HeightRequest(44)
             .StrokeThickness(0)
-            .BackgroundColor(t.DisplayColor)
+            .Background(t.DisplayColor)
             .Padding(DeviceInfo.Platform == DevicePlatform.Android ? new Thickness(18, 0, 18, 0) : DeviceInfo.Platform == DevicePlatform.WinUI ? new Thickness(18, 0, 18, 4) : new Thickness(18, 0, 18, 8))
-            .OnTapped(() => ToggleTag(t));
+            .OnTapped(async () => await ToggleTagAsync(t));
         }else{
             return Border(
                 Label(t.Title)
@@ -199,16 +208,30 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
             .StrokeShape(new RoundRectangle().CornerRadius(22))
             .HeightRequest(44)
             .StrokeThickness(0)
-            .BackgroundColor(Theme.IsLightTheme ? ApplicationTheme.LightSecondaryBackground : ApplicationTheme.DarkSecondaryBackground)
+            .Background(Theme.IsLightTheme ? ApplicationTheme.LightSecondaryBackground : ApplicationTheme.DarkSecondaryBackground)
             .Padding(DeviceInfo.Platform == DevicePlatform.Android ? new Thickness(18, 0, 18, 0) : DeviceInfo.Platform == DevicePlatform.WinUI ? new Thickness(18, 0, 18, 4) : new Thickness(18, 0, 18, 8))
-            .OnTapped(() => ToggleTag(t));
+            .OnTapped(async () => await ToggleTagAsync(t));
             ;
         }
     }
 
-    private void ToggleTag(Tag t)
+    private async Task ToggleTagAsync(Tag t)
     {
-        throw new NotImplementedException();
+        t.IsSelected = !t.IsSelected;
+
+        if (!_project.IsNullOrNew())
+        {
+            if (t.IsSelected)
+            {
+                await _tagRepository.SaveItemAsync(t, _project.ID);
+            }
+            else
+            {
+                await _tagRepository.DeleteItemAsync(t, _project.ID);
+            }
+        }
+
+        SetState(s => s.AllTags = new List<Tag>(State.AllTags));
     }
 
     private async Task CleanUpTasksAsync()

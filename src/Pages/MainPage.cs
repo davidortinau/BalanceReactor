@@ -5,6 +5,7 @@ using CommunityTemplate.Pages.Controls;
 using MauiReactor;
 using MauiReactor.Compatibility;
 using MauiReactor.Shapes;
+using MauiControls = Microsoft.Maui.Controls;
 
 namespace Balance.Pages;
 
@@ -47,22 +48,17 @@ public partial class MainPage : Component<MainPageState>
 	[Inject]
 	ILogger<MainPage> _logger;
 
-    protected override async void OnMounted()
-    {
-        base.OnMounted();
+	override protected async void OnMounted()
+	{
+		base.OnMounted();
 
-        if (!_dataLoaded)
+		if (!_dataLoaded)
 		{
 			await InitData(_seedDataService);
 			_dataLoaded = true;
-			await Refresh();
 		}
-		// This means we are being navigated to
-		else if (!_isNavigatedTo)
-		{
-			await Refresh();
-		}
-    }
+	}
+
     public override VisualNode Render()
      => ContentPage(
             Grid(
@@ -97,7 +93,20 @@ public partial class MainPage : Component<MainPageState>
                 ),
 				new AddButton().IsTask(true)
             )
-        ).Title(DateTime.Now.ToString("dddd, MMM d"));
+        )
+		.Title(DateTime.Now.ToString("dddd, MMM d"))
+		.OnNavigatedTo(() => _isNavigatedTo = true)
+		.OnNavigatedFrom(() => _isNavigatedTo = false)
+		.OnAppearing(OnAppearingAsync);
+
+    private async Task OnAppearingAsync()
+    {
+        if (!_isNavigatedTo)
+		{
+			await Refresh();
+			Invalidate();
+		}
+    }
 
     private async Task LoadData()
 	{
@@ -149,7 +158,7 @@ public partial class MainPage : Component<MainPageState>
 	{
 		try
 		{
-			State.IsRefreshing = true;
+			SetState(s => s.IsRefreshing = true);
 			await LoadData();
 		}
 		catch (Exception e)
@@ -158,7 +167,7 @@ public partial class MainPage : Component<MainPageState>
 		}
 		finally
 		{
-			State.IsRefreshing = false;
+			SetState(s => s.IsRefreshing = false);
 		}
 	}	
 }
