@@ -8,49 +8,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Balance.Components;
 
-public class TaskCardState
+public partial class TaskCard : Component
 {
-    public string Title { get; set; }
-    public bool IsCompleted { get; set; }
-}
+    [Prop]
+    ProjectTask _task;
 
-public partial class TaskCard : Component<TaskCardState>
-{
-    private Func<Task>? _action;
+    [Prop]
+    Func<ProjectTask, bool, Task>? _onCompletedChanged;
 
     [Inject]
     ILogger<TaskCard> _logger;
-
-    [Inject]
-    TaskRepository _taskRepository;
-
-    private ProjectTask _task;
-
-    public TaskCard(ProjectTask task)
-    {
-        _task = task;
-    }
-
-    public Component OnCheckChanged(Func<Task> action)
-    {
-        _action = action;
-        return this;
-    }
-
-    protected override void OnMounted()
-    {
-        State.Title = _task.Title;
-        State.IsCompleted = _task.IsCompleted;
-        base.OnMounted();
-    }
 
     public override VisualNode Render()
     => Border(
         Grid("*","Auto,*",
             CheckBox()
-                .IsChecked(State.IsCompleted)
+                .IsChecked(_task.IsCompleted)
                 .OnCheckedChanged(HandleCheckChanged),
-            Label(State.Title)
+            Label(_task.Title)
                 .GridColumn(1)
                 .VerticalOptions(LayoutOptions.Center)
                 .LineBreakMode(LineBreakMode.TailTruncation)
@@ -64,11 +39,9 @@ public partial class TaskCard : Component<TaskCardState>
     private async void HandleCheckChanged(object s, CheckedChangedEventArgs e)
     {
         _task.IsCompleted = e.Value;
-        SetState(s => s.IsCompleted = e.Value);
-        await Services.GetRequiredService<TaskRepository>().SaveItemAsync(_task);
-        if (_action != null)
+        if (_onCompletedChanged != null)
         {
-            await _action.Invoke();
+            await _onCompletedChanged(_task, e.Value);
         }
     }
 

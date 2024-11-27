@@ -154,7 +154,7 @@ partial class ProjectDetailsPage : Component<ProjectDetailsState, ProjectDetailP
                                 .OnClicked(CleanUpTasksAsync)
                         ).HeightRequest(44),
                         VStack(
-                            State.Tasks.Select(t => new TaskCard(t)).ToArray()						
+                            State.Tasks.Select(t => new TaskCard().Task(t)).ToArray()						
                         )
                         .Spacing(ApplicationTheme.LayoutSpacing)
                             

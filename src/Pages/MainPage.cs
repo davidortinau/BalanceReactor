@@ -61,7 +61,8 @@ partial class MainPage : Component<MainPageState>
                         HScrollView(
                             HStack(
 								State.Projects.Select(p => 
-									new ProjectCard(p)
+									new ProjectCard()
+										.Project(p)
 										.Width(200)
 										
 								).ToArray()
@@ -79,7 +80,7 @@ partial class MainPage : Component<MainPageState>
 								.OnClicked(CleanUpTasksAsync)
 						).HeightRequest(44),
 						VStack(
-							State.Tasks.Select(t => new TaskCard(t).OnCheckChanged(CheckCompletedTasks)).ToArray()
+							State.Tasks.Select(t => new TaskCard().Task(t).OnCompletedChanged(OnTaskCompletedChanged)).ToArray()
 						).Spacing(15)
                     )
                     .Spacing(ApplicationTheme.LayoutSpacing)
@@ -93,14 +94,20 @@ partial class MainPage : Component<MainPageState>
 		.OnAppearing(OnAppearingAsync);
 	}
 
+    private async Task OnTaskCompletedChanged(ProjectTask task, bool isCompleted)
+    {
+        await _taskRepository.SaveItemAsync(task);
+		State.Tasks = await _taskRepository.ListAsync();
+		State.HasCompletedTasks = State.Tasks.Any(t => t.IsCompleted);
+        Invalidate();
+    }
+
     async Task CheckCompletedTasks()
     {
 		// await _taskRepository.SaveItemAsync(task);
-
-        SetState(async s => {
-			s.Tasks = await _taskRepository.ListAsync();
-			s.HasCompletedTasks = s.Tasks.Any(t => t.IsCompleted);
-		});
+		State.Tasks = await _taskRepository.ListAsync();
+		State.HasCompletedTasks = State.Tasks.Any(t => t.IsCompleted);
+        Invalidate();
     }
 
     async Task CleanUpTasksAsync()
@@ -111,10 +118,9 @@ partial class MainPage : Component<MainPageState>
 			await _taskRepository.DeleteItemAsync(task);
 		}
 
-		SetState(async s => {
-			s.Tasks = await _taskRepository.ListAsync();
-			s.HasCompletedTasks = false;
-		});
+		State.Tasks = await _taskRepository.ListAsync();
+		State.HasCompletedTasks = false;
+		Invalidate();
 
     }
 
@@ -161,12 +167,10 @@ partial class MainPage : Component<MainPageState>
 				chartData.Add(new(category.Title, tasksCount));
 			}
 
-			SetState(async s => {
-				s.Projects = await _projectRepository.ListAsync();
-				s.TodoCategoryColors = chartColors;
-				s.TodoCategoryData = chartData;
-				s.Tasks = await _taskRepository.ListAsync();
-			});
+			State.Projects = await _projectRepository.ListAsync();
+			State.TodoCategoryColors = chartColors;
+			State.TodoCategoryData = chartData;
+			State.Tasks = await _taskRepository.ListAsync();
 		}
 		finally
 		{
