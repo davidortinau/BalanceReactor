@@ -5,6 +5,7 @@ using Balance.Resources.Styles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls.Hosting;
 using MauiControls = Microsoft.Maui.Controls;
+using MauiReactor.HotReload;
 
 
 namespace Balance;
@@ -16,9 +17,6 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-#if DEBUG
-            .EnableMauiReactorHotReload()
-#endif
             .ConfigureSyncfusionToolkit()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
@@ -31,25 +29,36 @@ public static class MauiProgram
 
 #if DEBUG
         builder.Logging.AddDebug();
-        builder.Services.AddLogging(configure => configure.AddDebug());
+        builder.EnableMauiReactorHotReload();
         builder.OnMauiReactorUnhandledException(ex =>
         {
             System.Diagnostics.Debug.WriteLine(ex);
         });
 #endif
-        builder.Services.AddSingleton<ProjectRepository>();
-		builder.Services.AddSingleton<TaskRepository>();
-		builder.Services.AddSingleton<CategoryRepository>();
-		builder.Services.AddSingleton<TagRepository>();
-		builder.Services.AddSingleton<SeedDataService>();
-		builder.Services.AddSingleton<ModalErrorHandler>();
-
+        
         
         MauiReactor.Routing.RegisterRoute<ProjectDetailsPage>(nameof(ProjectDetailsPage));
         MauiReactor.Routing.RegisterRoute<ManageMetaPage>(nameof(ManageMetaPage));
         MauiReactor.Routing.RegisterRoute<TaskDetailsPage>(nameof(TaskDetailsPage));
 		// builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
 
+        RegisterServices(builder.Services);
+
         return builder.Build();
+    }
+
+    [ComponentServices]
+    static void RegisterServices(IServiceCollection services)
+    {
+#if DEBUG
+        services.AddLogging(configure => configure.AddDebug());
+#endif
+
+        services.AddSingleton<ProjectRepository>();
+        services.AddSingleton<TaskRepository>();
+        services.AddSingleton<CategoryRepository>();
+        services.AddSingleton<TagRepository>();
+        services.AddSingleton<SeedDataService>();
+        services.AddSingleton<ModalErrorHandler>();
     }
 }

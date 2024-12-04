@@ -20,7 +20,7 @@
     <SingleProject>true</SingleProject>
     <Nullable>enable</Nullable>
 
-    <MauiVersion>9.0.10</MauiVersion>
+    <MauiVersion>9.0.12</MauiVersion>
 
     <!-- Display name -->
     <ApplicationTitle>Balance</ApplicationTitle>
@@ -72,7 +72,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Reactor.Maui" Version="3.0.5-beta" />
+    <PackageReference Include="Reactor.Maui" Version="3.0.7-beta" />
     <!-- <PackageReference Include="Reactor.Maui.Canvas" Version="3.0.3-beta" /> -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />

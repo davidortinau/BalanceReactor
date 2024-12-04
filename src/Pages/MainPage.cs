@@ -57,6 +57,11 @@ partial class MainPage : Component<MainPageState>
             Grid(
                 VScrollView(
                     VStack(
+                        new CategoryChart()
+                            .IsBusy(State.IsBusy)
+                            .TodoCategoryData(State.TodoCategoryData)
+                            .TodoCategoryColors(State.TodoCategoryColors),
+
                         Label("Projects").ThemeKey("Title2"),
                         HScrollView(
                             HStack(
